@@ -1,0 +1,29 @@
+CREATE OR REPLACE FUNCTION mdb.avoid_ebd_update_if_null_category (
+)
+RETURNS trigger AS
+$body$
+BEGIN
+
+IF (NEW."category" = 'New HC' ) AND NEW."ebd" IS NULL THEN
+
+	RAISE EXCEPTION 'EBD cannot be empty';
+    RETURN OLD;
+    
+ELSEIF (NEW."category" = 'Backfill' ) AND NEW."ebd" IS NULL THEN
+
+	RAISE EXCEPTION 'EBD cannot be empty';
+    RETURN OLD;
+
+ELSE
+
+	RETURN NEW;
+    
+END IF;
+
+END;
+$body$
+LANGUAGE 'plpgsql'
+VOLATILE
+CALLED ON NULL INPUT
+SECURITY INVOKER
+COST 100;
