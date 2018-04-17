@@ -1,0 +1,21 @@
+CREATE OR REPLACE FUNCTION mdb.experience (
+  p1 timestamptz
+)
+RETURNS numeric AS
+$body$
+DECLARE
+
+v_no_of_yrs  NUMERIC(4,2);
+
+BEGIN
+    
+v_no_of_yrs := date_part('days', NOW() - p1 )/365;
+return v_no_of_yrs ;
+
+END;
+$body$
+LANGUAGE 'plpgsql'
+VOLATILE
+RETURNS NULL ON NULL INPUT
+SECURITY DEFINER
+COST 100;
