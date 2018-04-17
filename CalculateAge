@@ -1,0 +1,18 @@
+CREATE OR REPLACE FUNCTION mdb.age (
+  v1 timestamptz,
+  v2 timestamptz
+)
+RETURNS varchar AS
+$body$
+DECLARE
+ v3 VARCHAR;
+BEGIN
+v3:=v1-v2;
+RETURN v3;
+END;
+$body$
+LANGUAGE 'plpgsql'
+VOLATILE
+CALLED ON NULL INPUT
+SECURITY INVOKER
+COST 100;
