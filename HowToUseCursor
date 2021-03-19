@@ -1,0 +1,114 @@
+CREATE OR REPLACE PROCEDURE "FUNCTIONS"."s_COMPETENCY_MAPPING_EXCEPTION" (
+  "TABLE_NAME" text
+)
+AS
+$body$
+DECLARE
+	SQL TEXT;
+	MR record;
+  	ME CURSOR
+  		FOR 
+        SELECT c."CG_TEXT",
+         c."SUB_STREAM_TEXT",
+         c."COMPETENCY_GROUP",
+         c."ACCOUNT",
+         c."SL_RM",
+         c."SL_RM_EMAIL_ID",
+         c."SL_RM_LEVEL",
+         c."MAPPING_EXCEPTION_ID",
+         c."DCL",
+         c."SL_LEAD",
+         c."PDH",
+         c."SECTOR",
+         c."COMPETENCY_GROUP_EXCEPTION",
+         c."BAND_BUCKET"
+  FROM "STATIC"."COMPETENCY_MAPPING_EXCEPTION" c
+  ORDER BY c."MAPPING_EXCEPTION_ID";
+  
+BEGIN
+	OPEN ME;
+    
+    LOOP
+    	FETCH ME into MR;
+        
+        -- exit when no more row to fetch
+      	EXIT WHEN NOT FOUND;
+        
+        SQL := format('UPDATE %s SET  ', $1);
+        
+        IF MR."DCL" IS NOT NULL || MR."DCL" <> '' THEN
+        	SQL := SQL || format('"DCL" = ''%s'' , ', MR."DCL");
+        END IF;  
+        
+        IF MR."SL_LEAD" IS NOT NULL || MR."SL_LEAD" <> '' THEN
+        	SQL := SQL || format('"SL_LEAD" = ''%s'' , ', MR."SL_LEAD");
+        END IF;
+        
+        IF MR."SL_RM" IS NOT NULL || MR."SL_RM" <> '' THEN
+        	SQL := SQL || format('"SL_RM" = ''%s'' , ', MR."SL_RM");
+        END IF;  
+        
+        IF MR."SL_RM_EMAIL_ID" IS NOT NULL || MR."SL_RM_EMAIL_ID" <> '' THEN
+        	SQL := SQL || format('"SL_RM_EMAIL_ID" = ''%s'' , ', MR."SL_RM_EMAIL_ID");
+        END IF;
+       
+    
+        IF MR."SL_RM_LEVEL" IS NOT NULL || MR."SL_RM_LEVEL" <> '' THEN
+        	SQL := SQL || format('"SL_RM_LEVEL" = ''%s'' , ', MR."SL_RM_LEVEL");
+        END IF;        
+     
+        IF MR."PDH" IS NOT NULL || MR."PDH" <> '' THEN
+        	SQL := SQL || format('"PDH" = ''%s'' , ', MR."PDH");
+        END IF;
+        
+        IF MR."COMPETENCY_GROUP_EXCEPTION" IS NOT NULL || MR."COMPETENCY_GROUP_EXCEPTION" <> '' THEN
+        	SQL := SQL || format('"COMPETENCY_GROUP" = ''%s'' , ', MR."COMPETENCY_GROUP_EXCEPTION");
+        END IF;                                                         
+        
+        --Remove last comma
+        SQL := LEFT(SQL, length(SQL)-2);        
+        
+        --Concatenate with WHERE CLAUSE
+        SQL := SQL || format(' WHERE o."SECTOR" NOT IN (''INDIA- PRE'', ''INDIA- SRE'') AND ');
+        
+        IF MR."CG_TEXT" IS NOT NULL || MR."CG_TEXT" <> '' THEN
+        	SQL := SQL || format('UPPER(o."CG_TEXT") = UPPER(''%s'') AND ', MR."CG_TEXT");
+        END IF;        
+        
+        IF MR."SUB_STREAM_TEXT" IS NOT NULL || MR."SUB_STREAM_TEXT" <> '' THEN
+        	SQL := SQL || format('UPPER(o."SUB_STREAM_TEXT") = UPPER(''%s'') AND ', MR."SUB_STREAM_TEXT");
+        END IF;
+        
+        IF MR."COMPETENCY_GROUP" IS NOT NULL || MR."COMPETENCY_GROUP" <> '' THEN
+        	SQL := SQL || format('UPPER(o."COMPETENCY_GROUP") = UPPER(''%s'') AND ', MR."COMPETENCY_GROUP");
+        END IF;
+        
+        IF MR."ACCOUNT" IS NOT NULL || MR."ACCOUNT" <> '' THEN
+        	SQL := SQL || format('UPPER(o."ACCOUNT") = UPPER(''%s'') AND ', MR."ACCOUNT");
+        END IF;
+        
+        IF MR."SECTOR" IS NOT NULL || MR."SECTOR" <> '' THEN
+        	SQL := SQL || format('UPPER(o."SECTOR") = UPPER(''%s'') AND ', MR."SECTOR");
+        END IF;
+
+        IF MR."BAND_BUCKET" IS NOT NULL || MR."BAND_BUCKET" <> '' THEN
+        	SQL := SQL || format('UPPER(o."BAND_BUCKET") = UPPER(''%s'') AND ', MR."BAND_BUCKET");
+        END IF;                                     
+        
+        SQL := LEFT(SQL, length(SQL)-4);
+        
+        SQL := SQL || ';';
+       
+        --RAISE NOTICE 'sql: %', sql;
+        
+        EXECUTE SQL;
+    
+    END LOOP;
+
+END;
+$body$
+LANGUAGE 'plpgsql'
+SECURITY INVOKER;
+
+ALTER PROCEDURE "FUNCTIONS"."s_COMPETENCY_MAPPING_EXCEPTION" ("TABLE_NAME" text)
+  OWNER TO root;
