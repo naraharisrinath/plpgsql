@@ -1,0 +1,30 @@
+CREATE OR REPLACE PROCEDURE "FUNCTIONS"."s_UPDATE_ACCOUNT" (
+  "TABLE_NAME" text,
+  "ACCOUT_FIELD_NAME" text,
+  "CUSTOMER_NAME" text,
+  "SECTOR" text
+)
+AS
+$body$
+DECLARE 
+	sql VARCHAR(1000);
+BEGIN
+--UPDATE ACCOUNT USING CUSTOMER NAME  
+    
+    	sql := format('UPDATE %s 
+          SET %s = TRIM(AC."ACCOUNT")
+      	FROM "FUNCTIONS"."v_ACCOUNT_CUSTOMER_MAPPING" AC 
+          WHERE 
+          UPPER(TRIM(%s)) = UPPER(TRIM(AC."CUSTOMER")) AND 
+          UPPER(TRIM(%s)) = UPPER(TRIM(AC."SECTOR"))', $1, $2, $3, $4);
+      
+/*      	RAISE NOTICE 'sql: %', sql;*/
+      
+   		EXECUTE sql;
+END;
+$body$
+LANGUAGE 'plpgsql'
+SECURITY INVOKER;
+
+ALTER PROCEDURE "FUNCTIONS"."s_UPDATE_ACCOUNT" ("TABLE_NAME" text, "ACCOUT_FIELD_NAME" text, "CUSTOMER_NAME" text, "SECTOR" text)
+  OWNER TO root;
