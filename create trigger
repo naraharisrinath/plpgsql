@@ -1,0 +1,60 @@
+CREATE OR REPLACE FUNCTION pmo.update_ms_category_in_milestone_table()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+
+/*Actua code that needs to be used to create trigger function is from below
+DECLARE
+    category VARCHAR(10);
+    category_band_1_min numeric;
+    category_band_1_max numeric;
+    category_band_2_min numeric;
+    category_band_2_max numeric;
+    category_band_3_min numeric;
+    category_band_3_max numeric;
+    category_band_4_min numeric;
+    category_band_4_max numeric;
+BEGIN
+
+    category_band_1_min := 0;
+    category_band_1_max := 64.9;
+    category_band_2_min := 65;
+    category_band_2_max := 74.9;
+    category_band_3_min := 75;
+    category_band_3_max := 84.9;
+    category_band_4_min := 85;
+    category_band_4_max := 100;
+    
+    IF TG_OP = 'UPDATE' THEN
+        
+        CASE       
+            WHEN NEW.ms_1_retest_score >=category_band_1_min AND NEW.ms_1_retest_score <=category_band_1_max THEN category = '<65';
+            WHEN NEW.ms_1_retest_score >=category_band_2_min AND NEW.ms_1_retest_score <=category_band_2_max THEN category = '65-74';
+            WHEN NEW.ms_1_retest_score >=category_band_3_min AND NEW.ms_1_retest_score <=category_band_3_max THEN category = '75-84';                  
+            WHEN NEW.ms_1_retest_score >=category_band_4_min AND NEW.ms_1_retest_score <=category_band_4_max THEN category = '85-100';  
+            
+            WHEN NEW.ms_1_score >=category_band_1_min AND NEW.ms_1_score <=category_band_1_max THEN category = '<65';
+            WHEN NEW.ms_1_score >=category_band_2_min AND NEW.ms_1_score <=category_band_2_max THEN category = '65-74';
+            WHEN NEW.ms_1_score >=category_band_3_min AND NEW.ms_1_score <=category_band_3_max THEN category = '75-84';                    
+            WHEN NEW.ms_1_score >=-category_band_4_min AND NEW.ms_1_score <=category_band_4_max THEN category = '85-100';                       
+            
+            WHEN NEW.ms_1_retest_score IS NULL AND NEW.ms_1_score IS NULL THEN category = '';
+            
+         END CASE;
+         
+         UPDATE pmo.milestones SET ms_1_category = category WHERE employee_id = NEW.employee_id;   
+         
+    END IF;
+    
+    RETURN NEW;    
+
+END;
+
+/After creating trigger from above statements, use below script to create trigger on table
+CREATE TRIGGER update_ms_category
+   AFTER INSERT OR UPDATE ON pmo.milestones
+    FOR EACH ROW
+    WHEN (pg_trigger_depth() < 1) -- !
+    EXECUTE FUNCTION update_ms_category_in_milestone_table();
