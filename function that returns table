@@ -1,0 +1,17 @@
+/*DO NOT EXCLUDE THE SINGLE QUOTE, ELSE CODE WILL FAIL*/
+
+CREATE OR REPLACE FUNCTION pmo.f_get_film (p_pattern VARCHAR) 
+    RETURNS TABLE (
+        film_title VARCHAR,
+        film_release_year INT
+)
+LANGUAGE plpgsql
+AS '
+
+BEGIN
+    RETURN QUERY SELECT
+        r.resource_id,
+        cast( year_of_passing as integer)
+    FROM
+        pmo.resources r ;
+END'
