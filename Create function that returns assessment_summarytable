@@ -1,0 +1,380 @@
+CREATE OR REPLACE FUNCTION pmo.f_assessment_summary (batch_name VARCHAR) 
+    RETURNS TABLE (
+        "Employee ID" VARCHAR,
+    "Trainee Name" VARCHAR,
+    "Official Email-ID" VARCHAR,
+    "Batch" VARCHAR,
+    "Main Track" VARCHAR,
+    "Sub-Track" VARCHAR,
+ "MS-1 Final Score" NUMERIC,
+ "MS-2 Final Score" NUMERIC,
+ "MS-3 Final Score" NUMERIC,
+ "MS-4 Final Score" NUMERIC,
+ "MS-5 Final Score" NUMERIC,
+ "MS-1 Final Category" VARCHAR,
+ "MS-2 Final Category" VARCHAR,
+ "MS-3 Final Category" VARCHAR,
+"MS-4 Final Category" VARCHAR,
+"MS-5 Final Category" VARCHAR,
+    "Pre-CEFR Assessment" VARCHAR,
+    "Final CEFR Assessment" VARCHAR,
+    "MS-1 Score" NUMERIC,
+    "MS-1 Result" VARCHAR,
+    "MS-1 Category" VARCHAR,
+    "MS-1 Retest Score" NUMERIC,
+    "MS-1 Retest Result" VARCHAR,
+    "MS-1 Retest Category" VARCHAR,
+    "MS-2 Score" NUMERIC,
+    "MS-2 Result" VARCHAR,
+    "MS-2 Category" VARCHAR,
+    "MS-2 Retest Score" NUMERIC,
+    "MS-2 Retest Result" VARCHAR,
+    "MS-2 Retest Category" VARCHAR,
+    "MS-3 Score" NUMERIC,
+    "MS-3 Result" VARCHAR,
+    "MS-3 Category" VARCHAR,
+    "MS-3 Retest Score" NUMERIC,
+    "MS-3 Retest Result" VARCHAR,
+    "MS-3 Retest Category" VARCHAR,
+    "MS-4 Score" NUMERIC,
+    "MS-4 Result" VARCHAR,
+    "MS-4 Category" VARCHAR,
+    "MS-4 Retest Score" NUMERIC,
+    "MS-4 Retest Result" VARCHAR,
+    "MS-4 Retest Category" VARCHAR,
+    "MS-5 Score" NUMERIC,
+    "MS-5 Result" VARCHAR,
+    "MS-5 Category" VARCHAR,
+    "MS-5 Retest Score" NUMERIC,
+    "MS-5 Retest Result" VARCHAR,
+    "MS-5 Retest Category" VARCHAR,
+   "End Result" VARCHAR,
+    "Last Coding Score" NUMERIC,
+    "Last Coding Score Category" VARCHAR,
+    "Project Milestone Score" NUMERIC,
+    "Project Milestone Score Category" VARCHAR,
+    "Resource ID" INTEGER,
+    "Track ID" INTEGER,
+    "Combo-Key" VARCHAR,
+    "Combo-Key-1" VARCHAR,
+    "Exit Status" VARCHAR,
+    "Exit Status Details" VARCHAR,
+    "LBJ Batch" VARCHAR,
+    "Training Location" VARCHAR,
+    "Training Start Date" DATE,
+    "Training End Date" DATE,
+    "Services Required" VARCHAR,
+    "Year of Passing" VARCHAR,
+    "Batch Year" VARCHAR,
+    "Batch ID" INTEGER,
+    "Academy" VARCHAR,
+    "BU-SME Feedback Start Date" DATE,
+    "BU SME Feedback Status" VARCHAR,
+    "Location Head" VARCHAR,
+    "Date of Joining" DATE,
+    "LBJ Track" VARCHAR,
+    "Category" VARCHAR,
+    "College" VARCHAR,
+    "Consolidated Track" VARCHAR,
+    "LBJ Status" VARCHAR,
+    "Branch" VARCHAR
+) 
+LANGUAGE plpgsql
+AS '
+
+BEGIN
+    RETURN QUERY 
+SELECT employee_id AS "Employee ID",
+    "Trainee Name",
+    "Official Email-ID",
+    "Batch",
+    "Main Track",
+    "Sub-Track",
+        CASE
+            WHEN "MS-1 Retest Score" IS NULL THEN "MS-1 Score"
+            ELSE "MS-1 Retest Score"
+        END AS "MS-1 Final Score",
+        CASE
+            WHEN "MS-2 Retest Score" IS NULL THEN "MS-2 Score"
+            ELSE "MS-2 Retest Score"
+        END AS "MS-2 Final Score",
+        CASE
+            WHEN "MS-3 Retest Score" IS NULL THEN "MS-3 Score"
+            ELSE "MS-3 Retest Score"
+        END AS "MS-3 Final Score",
+        CASE
+            WHEN "MS-4 Retest Score" IS NULL THEN "MS-4 Score"
+            ELSE "MS-4 Retest Score"
+        END AS "MS-4 Final Score",
+        CASE
+            WHEN "MS-5 Retest Score" IS NULL THEN "MS-5 Score"
+            ELSE "MS-5 Retest Score"
+        END AS "MS-5 Final Score",
+        CASE
+            WHEN "MS-1 Retest Category" IS NULL THEN "MS-1 Category"
+            ELSE "MS-1 Retest Category"
+        END AS "MS-1 Final Category",
+        CASE
+            WHEN "MS-2 Retest Category" IS NULL THEN "MS-2 Category"
+            ELSE "MS-2 Retest Category"
+        END AS "MS-2 Final Category",
+        CASE
+            WHEN "MS-3 Retest Category" IS NULL THEN "MS-3 Category"
+            ELSE "MS-3 Retest Category"
+        END AS "MS-3 Final Category",
+        CASE
+            WHEN "MS-4 Retest Category" IS NULL THEN "MS-4 Category"
+            ELSE "MS-4 Retest Category"
+        END AS "MS-4 Final Category",
+        CASE
+            WHEN "MS-5 Retest Category" IS NULL THEN "MS-5 Category"
+            ELSE "MS-5 Retest Category"
+        END AS "MS-5 Final Category",
+    "Pre-CEFR Assessment",
+    "Final CEFR Assessment",
+    "MS-1 Score",
+    "MS-1 Result",
+    "MS-1 Category",
+    "MS-1 Retest Score",
+    "MS-1 Retest Result",
+    "MS-1 Retest Category",
+    "MS-2 Score",
+    "MS-2 Result",
+    "MS-2 Category",
+    "MS-2 Retest Score",
+    "MS-2 Retest Result",
+    "MS-2 Retest Category",
+    "MS-3 Score",
+    "MS-3 Result",
+    "MS-3 Category",
+    "MS-3 Retest Score",
+    "MS-3 Retest Result",
+    "MS-3 Retest Category",
+    "MS-4 Score",
+    "MS-4 Result",
+    "MS-4 Category",
+    "MS-4 Retest Score",
+    "MS-4 Retest Result",
+    "MS-4 Retest Category",
+    "MS-5 Score",
+    "MS-5 Result",
+    "MS-5 Category",
+    "MS-5 Retest Score",
+    "MS-5 Retest Result",
+    "MS-5 Retest Category",
+        CASE
+            WHEN "Exit Status" IS NOT NULL THEN "Exit Status"
+            ELSE
+            CASE
+                WHEN "MS-1 Final Assessment Result" = ''Fail'' THEN ''Fail''
+                WHEN "MS-2 Final Assessment Result" = ''Fail'' THEN ''Fail''
+                WHEN "MS-3 Final Assessment Result" = ''Fail'' THEN ''Fail''
+                WHEN "MS-4 Final Assessment Result" = ''Fail'' THEN ''Fail''
+                WHEN "MS-5 Final Assessment Result" = ''Fail'' THEN ''Fail''
+                ELSE ''Pass''
+            END
+        END AS "End Result",
+    "Last Coding Score",
+    "Last Coding Score Category",
+    "Project Milestone Score",
+    "Project Milestone Score Category",
+    resource_id AS "Resource ID",
+    track_id AS "Track ID",
+    "Combo-Key",
+    "Combo-Key-1",
+    "Exit Status",
+    "Exit Status Details",
+    "LBJ Batch",
+    "Training Location",
+    "Training Start Date",
+    "Training End Date",
+    "Services Required",
+    "Year of Passing",
+    "Batch Year",
+    "Batch ID",
+    "Academy",
+    "BU-SME Feedback Start Date",
+    "BU SME Feedback Status",
+    "Location Head",
+    "Date of Joining",
+    "LBJ Track",
+    "Category",
+    "College",
+    "Consolidated Track",
+    "LBJ Status",
+    "Branch"
+   FROM ( SELECT b.batch_name AS "Batch",
+            t.main_track_name AS "Main Track",
+            t.sub_track_name AS "Sub-Track",
+            m.resource_id,
+            r.official_email_id AS "Official Email-ID",
+            r.employee_id,
+            initcap(r.name::text) AS "Trainee Name",
+            m.track_id,
+            ms1.milestone_score::numeric(7,3) AS "MS-1 Score",
+            ms1.result AS "MS-1 Result",
+            ms1.milestone_category AS "MS-1 Category",
+            ms2.milestone_score::numeric(7,3) AS "MS-2 Score",
+            ms2.result AS "MS-2 Result",
+            ms2.milestone_category AS "MS-2 Category",
+            ms3.milestone_score::numeric(7,3) AS "MS-3 Score",
+            ms3.result AS "MS-3 Result",
+            ms3.milestone_category AS "MS-3 Category",
+            ms4.milestone_score::numeric(7,3) AS "MS-4 Score",
+            ms4.result AS "MS-4 Result",
+            ms4.milestone_category AS "MS-4 Category",
+            ms5.milestone_score::numeric(7,3) AS "MS-5 Score",
+            ms5.result AS "MS-5 Result",
+            ms5.milestone_category AS "MS-5 Category",
+            ms1_retest.milestone_score::numeric(7,3) AS "MS-1 Retest Score",
+            ms1_retest.result AS "MS-1 Retest Result",
+            ms1_retest.milestone_category AS "MS-1 Retest Category",
+            ms2_retest.milestone_score::numeric(7,3) AS "MS-2 Retest Score",
+            ms2_retest.result AS "MS-2 Retest Result",
+            ms2_retest.milestone_category AS "MS-2 Retest Category",
+            ms3_retest.milestone_score::numeric(7,3) AS "MS-3 Retest Score",
+            ms3_retest.result AS "MS-3 Retest Result",
+            ms3_retest.milestone_category AS "MS-3 Retest Category",
+            ms4_retest.milestone_score::numeric(7,3) AS "MS-4 Retest Score",
+            ms4_retest.result AS "MS-4 Retest Result",
+            ms4_retest.milestone_category AS "MS-4 Retest Category",
+            ms5_retest.milestone_score::numeric(7,3) AS "MS-5 Retest Score",
+            ms5_retest.result AS "MS-5 Retest Result",
+            ms5_retest.milestone_category AS "MS-5 Retest Category",
+            pre_cefr.communication_score AS "Pre-CEFR Assessment",
+            final_cefr.communication_score AS "Final CEFR Assessment",
+            l.location AS "Training Location",
+            (t.sub_track_name || '' '') || b.batch_id AS "Combo-Key",
+            (b.batch_name || '' '') || t.sub_track_name AS "Combo-Key-1",
+            e.group_exit_status AS "Exit Status",
+            e.exit_status AS "Exit Status Details",
+            r.lbj_batch AS "LBJ Batch",
+            to_char(t.start_date::timestamp with time zone, ''DD-Mon-YYYY'') AS "Training Start Date",
+            to_char(t.end_date::timestamp with time zone, ''dd-Mon-yyyy'') AS "Training End Date",
+            pmo.f_ms_final_assessment_result(ms1.result, ms1_retest.result) AS "MS-1 Final Assessment Result",
+            pmo.f_ms_final_assessment_result(ms2.result, ms2_retest.result) AS "MS-2 Final Assessment Result",
+            pmo.f_ms_final_assessment_result(ms3.result, ms3_retest.result) AS "MS-3 Final Assessment Result",
+            pmo.f_ms_final_assessment_result(ms4.result, ms4_retest.result) AS "MS-4 Final Assessment Result",
+            pmo.f_ms_final_assessment_result(ms5.result, ms5_retest.result) AS "MS-5 Final Assessment Result",
+            t.platform_only_status AS "Services Required",
+            r.year_of_passing AS "Year of Passing",
+            b.year AS "Batch Year",
+            b.batch_id AS "Batch ID",
+            t.academy AS "Academy",
+            t.end_date + 90 AS "BU-SME Feedback Start Date",
+            t.bu_sme_feedback_status AS "BU SME Feedback Status",
+            l.location_incharge AS "Location Head",
+            r.doj AS "Date of Joining",
+            r.lbj_track AS "LBJ Track",
+            r.category AS "Category",
+            r.institute AS "College",
+            t.consolidated_track_name AS "Consolidated Track",
+            r.lbj_status AS "LBJ Status",
+            r.specialization AS "Branch",
+            ( SELECT ml.milestone_score::numeric(7,3) AS milestone_score
+                   FROM pmo.milestone_transactions ml
+                  WHERE m.resource_id = ml.rid AND t.track_id = ml.track_id AND (ml.milestone_transaction_id IN ( SELECT max(ml_1.milestone_transaction_id) AS max
+                           FROM pmo.milestone_transactions ml_1
+                          WHERE ml_1.score_category ~~ ''Coding%'' AND ml_1.rid = m.resource_id AND ml_1.track_id = t.track_id))) AS "Last Coding Score",
+            ( SELECT ml.milestone_category
+                   FROM pmo.milestone_transactions ml
+                  WHERE m.resource_id = ml.rid AND t.track_id = ml.track_id AND (ml.milestone_transaction_id IN ( SELECT max(ml_1.milestone_transaction_id) AS max
+                           FROM pmo.milestone_transactions ml_1
+                          WHERE ml_1.score_category ~~ ''Coding%'' AND ml_1.rid = m.resource_id AND ml_1.track_id = t.track_id))) AS "Last Coding Score Category",
+            ( SELECT ml.milestone_score::numeric(7,3) AS milestone_score
+                   FROM pmo.milestone_transactions ml
+                  WHERE m.resource_id = ml.rid AND t.track_id = ml.track_id AND (ml.milestone_transaction_id IN ( SELECT max(ml_1.milestone_transaction_id) AS max
+                           FROM pmo.milestone_transactions ml_1
+                          WHERE ml_1.score_category ~~ ''Project%'' AND ml_1.rid = m.resource_id AND ml_1.track_id = t.track_id))) AS "Project Milestone Score",
+            ( SELECT ml.milestone_category
+                   FROM pmo.milestone_transactions ml
+                  WHERE m.resource_id = ml.rid AND t.track_id = ml.track_id AND (ml.milestone_transaction_id IN ( SELECT max(ml_1.milestone_transaction_id) AS max
+                           FROM pmo.milestone_transactions ml_1
+                          WHERE ml_1.score_category ~~ ''Project%'' AND ml_1.rid = m.resource_id AND ml_1.track_id = t.track_id))) AS "Project Milestone Score Category"
+           FROM pmo.track t
+             LEFT JOIN pmo.milestones m ON m.track_id = t.track_id
+             LEFT JOIN pmo.exit_status e ON m.exit_status_id = e.exit_status_id
+             LEFT JOIN pmo.resources r ON r.resource_id = m.resource_id
+             LEFT JOIN pmo.batch b ON t.batch_id = b.batch_id
+             LEFT JOIN pmo.location l ON t.location_id = l.location_id
+             LEFT JOIN ( SELECT f_get_table_1.rid,
+                    f_get_table_1.milestone_category,
+                    f_get_table_1.track_id,
+                    f_get_table_1.result,
+                    f_get_table_1.milestone_score
+                   FROM pmo.f_get_table(1::bigint, 0) f_get_table_1(rid, milestone_category, track_id, result, milestone_score, communication_score)) ms1 ON m.resource_id = ms1.rid AND t.track_id = ms1.track_id
+             LEFT JOIN ( SELECT f_get_table_1.rid,
+                    f_get_table_1.milestone_category,
+                    f_get_table_1.track_id,
+                    f_get_table_1.result,
+                    f_get_table_1.milestone_score
+                   FROM pmo.f_get_table(2, 0) f_get_table_1(rid, milestone_category, track_id, result, milestone_score, communication_score)) ms2 ON m.resource_id = ms2.rid AND t.track_id = ms2.track_id
+             LEFT JOIN ( SELECT f_get_table_1.rid,
+                    f_get_table_1.milestone_category,
+                    f_get_table_1.track_id,
+                    f_get_table_1.result,
+                    f_get_table_1.milestone_score
+                   FROM pmo.f_get_table(3::bigint, 0) f_get_table_1(rid, milestone_category, track_id, result, milestone_score, communication_score)) ms3 ON m.resource_id = ms3.rid AND t.track_id = ms3.track_id
+             LEFT JOIN ( SELECT f_get_table_1.rid,
+                    f_get_table_1.milestone_category,
+                    f_get_table_1.track_id,
+                    f_get_table_1.result,
+                    f_get_table_1.milestone_score
+                   FROM pmo.f_get_table(4::bigint, 0) f_get_table_1(rid, milestone_category, track_id, result, milestone_score, communication_score)) ms4 ON m.resource_id = ms4.rid AND t.track_id = ms4.track_id
+             LEFT JOIN ( SELECT f_get_table_1.rid,
+                    f_get_table_1.milestone_category,
+                    f_get_table_1.track_id,
+                    f_get_table_1.result,
+                    f_get_table_1.milestone_score
+                   FROM pmo.f_get_table(5, 0) f_get_table_1(rid, milestone_category, track_id, result, milestone_score, communication_score)) ms5 ON m.resource_id = ms5.rid AND t.track_id = ms5.track_id
+             LEFT JOIN ( SELECT f_get_table_1.rid,
+                    f_get_table_1.milestone_category,
+                    f_get_table_1.track_id,
+                    f_get_table_1.result,
+                    f_get_table_1.milestone_score
+                   FROM pmo.f_get_table(1::bigint, 1) f_get_table_1(rid, milestone_category, track_id, result, milestone_score, communication_score)) ms1_retest ON m.resource_id = ms1_retest.rid AND t.track_id = ms1_retest.track_id
+             LEFT JOIN ( SELECT f_get_table_1.rid,
+                    f_get_table_1.milestone_category,
+                    f_get_table_1.track_id,
+                    f_get_table_1.result,
+                    f_get_table_1.milestone_score
+                   FROM pmo.f_get_table(2, 1) f_get_table_1(rid, milestone_category, track_id, result, milestone_score, communication_score)) ms2_retest ON m.resource_id = ms2_retest.rid AND t.track_id = ms2_retest.track_id
+             LEFT JOIN ( SELECT f_get_table_1.rid,
+                    f_get_table_1.milestone_category,
+                    f_get_table_1.track_id,
+                    f_get_table_1.result,
+                    f_get_table_1.milestone_score
+                   FROM pmo.f_get_table(3, 1) f_get_table_1(rid, milestone_category, track_id, result, milestone_score, communication_score)) ms3_retest ON m.resource_id = ms3_retest.rid AND t.track_id = ms3_retest.track_id
+             LEFT JOIN ( SELECT f_get_table_1.rid,
+                    f_get_table_1.milestone_category,
+                    f_get_table_1.track_id,
+                    f_get_table_1.result,
+                    f_get_table_1.milestone_score
+                   FROM pmo.f_get_table(4, 1) f_get_table_1(rid, milestone_category, track_id, result, milestone_score, communication_score)) ms4_retest ON m.resource_id = ms4_retest.rid AND t.track_id = ms4_retest.track_id
+             LEFT JOIN ( SELECT f_get_table_1.rid,
+                    f_get_table_1.milestone_category,
+                    f_get_table_1.track_id,
+                    f_get_table_1.result,
+                    f_get_table_1.milestone_score
+                   FROM pmo.f_get_table(5, 1) f_get_table_1(rid, milestone_category, track_id, result, milestone_score, communication_score)) ms5_retest ON m.resource_id = ms5_retest.rid AND t.track_id = ms5_retest.track_id
+             LEFT JOIN ( SELECT f_get_table_1.rid,
+                    f_get_table_1.milestone_category,
+                    f_get_table_1.track_id,
+                    f_get_table_1.result,
+                    f_get_table_1.milestone_score,
+                    f_get_table_1.communication_score
+                   FROM pmo.f_get_table(6, 0) f_get_table_1(rid, milestone_category, track_id, result, milestone_score, communication_score)) pre_cefr ON m.resource_id = pre_cefr.rid AND t.track_id = pre_cefr.track_id
+             LEFT JOIN ( SELECT f_get_table_1.rid,
+                    f_get_table_1.milestone_category,
+                    f_get_table_1.track_id,
+                    f_get_table_1.result,
+                    f_get_table_1.milestone_score,
+                    f_get_table_1.communication_score
+                   FROM pmo.f_get_table(6, 1) f_get_table_1(rid, milestone_category, track_id, result, milestone_score, communication_score)) final_cefr ON m.resource_id = final_cefr.rid AND t.track_id = final_cefr.track_id
+          WHERE r.resource_id IS NOT NULL) st
+	WHERE "Batch" IN($1)
+	
+  ORDER BY "Batch", "Main Track", "Sub-Track";
+
+
+END'
